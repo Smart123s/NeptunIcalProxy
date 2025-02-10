@@ -35,6 +35,14 @@ class ICalRequestHandler(http.server.BaseHTTPRequestHandler):
             if not url:
                 self.respond_error(400, "Missing or invalid URL in path")
                 return
+            
+            allowed_hosts = os.environ.get("ALLOWED_HOSTS", "").split(",")  # Get allowed hosts
+            allowed_hosts = [host.strip() for host in allowed_hosts] # Remove leading/trailing spaces
+
+            parsed_url = urllib.parse.urlparse(url)
+            if parsed_url.netloc not in allowed_hosts and "*" not in allowed_hosts:  # Check against allowed hosts
+                self.respond_error(403, "Forbidden: Host not allowed")
+                return
 
             try:
                 with urllib.request.urlopen(url) as response:
