@@ -66,6 +66,11 @@ class ICalRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.respond_error(403, "Forbidden: Host not allowed")
                 return
 
+            # Check the end of the path
+            if not parsed_url.path.endswith("/api/Calendar/CalendarExportFileToSyncronization"):
+                self.respond_error(403, "Forbidden: Invalid API endpoint")
+                return
+
             try:
                 with urllib.request.urlopen(url) as response:
                     if response.status != 200:
