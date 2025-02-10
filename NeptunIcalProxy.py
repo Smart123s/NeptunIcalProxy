@@ -41,6 +41,28 @@ request_count = 0
 
 class ICalRequestHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
+
+        if self.path == '/':  # Landing page
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+
+            browser_host = self.headers.get('Host')
+            example_link = f"https://{browser_host}/https://neptun-ws02.uni-pannon.hu/hallgato/api/Calendar/CalendarExportFileToSyncronization?id=YOUR_CALENDAR_ID.ics"
+
+            html = f"""
+            <html>
+            <head><title>Neptun iCal proxy</title></head>
+            <body>
+                <h1>Remove multi-month events from the new Neptun iCal calendars</h1>
+                <h3>Example usage</h3>
+                <a href="{example_link}">{example_link}</a>
+            </body>
+            </html>
+            """
+            self.wfile.write(html.encode('utf-8'))
+            return
+
         max_requests = int(os.environ.get("MAX_REQUESTS_PER_MINUTE", 60))  # Default 60 if not set
 
         now = time()
