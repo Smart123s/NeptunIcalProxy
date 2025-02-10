@@ -26,10 +26,32 @@ import urllib.error
 import urllib.parse
 import os
 import re
+from time import time
 from dotenv import load_dotenv
+
+
+current_minute = 0
+request_count = 0
 
 class ICalRequestHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
+        max_requests = int(os.environ.get("MAX_REQUESTS_PER_MINUTE", 60))  # Default 60 if not set
+
+        now = time()
+        minute = int(now // 60) # Current minute
+
+        global current_minute, request_count # Access global variables
+
+        if current_minute != minute: # If the minute has changed
+            current_minute = minute # Update the current minute
+            request_count = 0 # Reset the request count
+
+        if request_count >= max_requests:
+            self.respond_error(429, "Too Many Requests")
+            return
+
+        request_count += 1 # Increment the request count
+
         try:
             url = self.parse_url()
             if not url:
