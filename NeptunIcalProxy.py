@@ -27,7 +27,13 @@ import urllib.parse
 import os
 import re
 from time import time
-from dotenv import load_dotenv
+
+
+try:
+    from dotenv import load_dotenv
+    dotenv_installed = True
+except ImportError:
+    dotenv_installed = False
 
 
 current_minute = 0
@@ -144,7 +150,8 @@ def run_server(port):
     httpd.serve_forever()
 
 if __name__ == "__main__":
-    load_dotenv()
+    if dotenv_installed:
+        load_dotenv()
 
     env_port = os.environ.get("PORT")
 
