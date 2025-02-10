@@ -23,9 +23,10 @@
 import http.server
 import urllib.request
 import urllib.error
-import argparse
 import urllib.parse
-import re  # For regular expressions
+import os
+import re
+from dotenv import load_dotenv
 
 class ICalRequestHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
@@ -108,8 +109,17 @@ def run_server(port):
     httpd.serve_forever()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Simple iCal web server.")
-    parser.add_argument('-p', '--port', type=int, default=8080, help='Port to listen on')
-    args = parser.parse_args()
+    load_dotenv()
 
-    run_server(args.port)
+    env_port = os.environ.get("PORT")
+
+    if env_port:
+        try:
+            port = int(env_port)
+        except ValueError:
+            print("Invalid port in environment variable. Using default 8080.")
+            port = 8080
+    else:
+        port = 8080
+
+    run_server(port)
